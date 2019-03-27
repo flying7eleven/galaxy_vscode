@@ -19,3 +19,42 @@
   with_items:
     - code
   when: ansible_os_family == 'Debian'
+
+- name: Ensure the configuration directories are empty
+  file: path={{ item }} state=absent
+  with_items:
+    - "~/.vscode-oss"
+    - "~/.vscode"
+    - "~/.config/Code - OSS"
+    - "~/.config/Code"
+
+- name: Create the required directories for the configuration files
+  file: path={{ item }} state=directory
+  with_items:
+    - ~/.vscode
+    - ~/.config/Code/User
+
+- name: Create the required symlink for the Visual Studio Code configuration directories...
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+    state: link
+  with_items:
+    - { src: "~/.vscode", dst: "~/.vscode-oss" }
+    - { src: "~/.config/Code", dst: "~/.config/Code - OSS" }
+
+- name: Installing custom configuration files...
+  template:
+    src: "{{ item.srcname }}.j2"
+    dest: "{{ item.target }}/{{ item.dstname }}"
+  with_items:
+    - { srcname: "vscode.settings.json", dstname: "settings.json", target: "~/.config/Code/User" }
+
+- name: Install some extensions which are useful...
+  shell: code --install-extension {{ item }}
+  with_items:
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - ms-vscode.cpptools
+    - msjsdiag.debugger-for-chrome
+    - ryu1kn.annotator
