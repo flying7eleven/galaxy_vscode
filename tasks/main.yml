@@ -1,0 +1,21 @@
+# for Debian/Ubuntu use the flow specified here: https://code.visualstudio.com/docs/setup/linux
+- name: Set up the key for the Visual Studio Code repository (Debian)...
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: BC528686B50D79E339D3721CEB3E94ADBE1229CF
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure the Visual Studio Code repository is configured (Debian)...
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Install Visual Studio Code and related components (Debian)...
+  become: yes
+  apt: name={{ item }} state=latest
+  with_items:
+    - code
+  when: ansible_os_family == 'Debian'
