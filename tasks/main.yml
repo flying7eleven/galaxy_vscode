@@ -20,6 +20,11 @@
     - code
   when: ansible_os_family == 'Debian'
 
+- name: Install Visual Studio Code and related components (Arch Linux)...
+  become: yes
+  pacman: name=code state=latest update_cache=yes
+  when: ansible_os_family == 'Arch Linux' or ansible_os_family == 'Archlinux'
+
 - name: Ensure the configuration directories are empty
   file: path={{ item }} state=absent
   with_items:
